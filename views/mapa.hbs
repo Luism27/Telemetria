@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>mapa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div id="map-template"></div>
+
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+
+    <script>
+        let long, datos, lat, d, fech, tiem, fech2, tiem2, fech3, unixt, unixdate, mich, marcador;
+        const map = L.map('map-template').setView([10.99304, -74.82814], 13);
+        const tileurl = 'https://a.tile.openstreetmap.de/{z}/{x}/{y}.png';
+        const tileurl2 = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
+        L.tileLayer(tileurl2).addTo(map);
+        marcador = L.marker([10, -10])
+        marcador.addTo(map);
+        var polyline;
+        function actualizar() {
+            fetch("/coord").then(res => {
+                return res.json()
+            }).then(data => {
+                long = data.longitud
+                lat = data.latitud
+                if (!polyline) {
+                    polyline = L.polyline([{ lat: lat, lon: long }]).addTo(map);
+                }
+                fech = data.fecha
+                tiem2 = data.hora
+                let fecha = fech;
+                let hora = tiem2;
+                let variable = [fecha, hora, lat, long];
+                let newLatLng = new L.LatLng(lat, long);
+                let LatLng2 = L.LatLng(lat, long);
+                polyline.addLatLng(newLatLng);
+                marcador.setLatLng(newLatLng);
+                //L.setView(newLatLng,13).addTo(map);
+                map.setView(newLatLng);
+                marcador.bindPopup(`${variable}`);
+            })
+            
+
+             fetch("/coord1").then(res => {
+                return res.json()
+            }).then(data => {
+                long = data.Longitud
+                lat = data.Latitud
+                if (!polyline) {
+                    polyline = L.polyline([{ lat: lat, lon: long }],{color: 'red' }).addTo(map);
+                }
+                fech = data.Fecha
+                tiem2 = data.Hora
+                let fecha = fech;
+                let hora = tiem2;
+                let variable = [fecha, hora, lat, long];
+                let newLatLng = new L.LatLng(lat, long);
+                let LatLng2 = L.LatLng(lat, long);
+                polyline.addLatLng(newLatLng);
+                marcador.setLatLng(newLatLng);
+                marcador.bindPopup(`${variable}`);
+            })
+            //setView([lat, long]);
+        }
+        let actualizarLista = setInterval(actualizar, 1000);
+    </script>
+</body>
+
+</html>
