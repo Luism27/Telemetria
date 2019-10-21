@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<!--
+	Solid State by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Historicos</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="http://localhost:8080/">Momlam</a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Menu</h2>
+							<ul class="links">
+								<li><a href="http://localhost:8080/">Home</a></li>
+								<li><a href="mapa.html">Generic</a></li>
+								<li><a href="elements.html">Elements</a></li>
+							</ul>
+							<a href="#" class="close">Close</a>
+						</div>
+					</nav>
+
+				
+						<!-- Content -->
+						<div class="box">
+							<div class="box1">
+								<div class="label">
+									Fecha incial :
+								</div>
+								<input type="date" id="fecha1" />
+							</div>
+							<div class="box1">
+								<div class="label">
+									Hora incial :
+								</div>
+								<input type="time" id="hora1" />
+							</div>
+							<div class="box1">
+								<div class="label">
+									Fecha final :
+								</div>
+								<input type="date" id="fecha2" />
+					
+							</div>
+							<div class="box1">
+								<div class="label">
+									Hora final :
+								</div>
+								<input type="time" id="hora2" />
+							</div>
+							<div id="boton">
+								Consultar
+							</div>
+					
+						</div>
+						<div id="map-template"></div>
+						</div>
+				<!-- Footer -->
+					
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script>
+				const map = L.map('map-template').setView([10.99304, -74.82814], 13);
+				const tileurl = 'https://a.tile.openstreetmap.de/{z}/{x}/{y}.png';
+				const tileurl2 = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
+				L.tileLayer(tileurl2).addTo(map);
+				const f1 = document.getElementById("fecha1");
+				const f2 = document.getElementById("fecha2");
+				const h1 = document.getElementById("hora1");
+				const h2 = document.getElementById("hora2");
+				const btn = document.getElementById("boton");
+				let road = [];
+				let polyline;
+				btn.addEventListener("click", () => {
+					let c1 = new Date(f1.value)
+					c1.getMilliseconds()
+					let c2 = new Date(f2.value)
+					c2.getMilliseconds()
+					//let c3 = new Date(h1.value)
+					//c3.getMilliseconds()
+					//let c4 = new Date(h2.value)
+					//c4.getMilliseconds()
+					let t1 = h1.value.split(":")
+					let tt1 = (t1[0] / 3600000) + (t1[1] / 60000) + (t1[2] / 1000)
+					let t2 = h2.value.split(":")
+					let tt2 = (t2[0] / 3600000) + (t2[1] / 60000) + (t2[2] / 1000)
+					if (c2 + tt2 >= c1 + tt1) {
+						console.log("bien");
+						let data = {
+							fecha1: f1.value, fecha2: f2.value, hora1: h1.value, hora2: h2.value
+						}
+						//console.log(data);
+						fetch("/history", {
+							method: 'POST', // 
+							body: JSON.stringify(data), // 
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						}).then(res => {
+							return res.json() //
+						}).then(data => {
+							if (polyline) {
+								polyline.remove();
+							}
+							data.map((d, i) => { // for 
+								road[i] = {
+									lat: d.Latitud,
+									lon: d.Longitud
+								}
+							})
+							//console.log(road)
+							polyline = L.polyline(road).addTo(map);
+						})
+					} else {
+						console.log("mal");
+						alert("Fecha incorrecta")
+					}
+				})
+			</script>
+			<style>
+				#map-template {
+					height: 100%;
+					width: fill;
+					position: absolute;
+					top: 0;
+					left: 30%;
+				}
+				body {
+					display: flex;
+					background: transparent url('https://www.missdigitalink.com/wp-content/uploads/2016/10/location.png') 0% 0% no-repeat padding-box;
+					opacity: 1;
+					background-size: 100vw 130vh;
+					background-position: top;
+				}
+				.box {
+					padding-top: 190px;
+					display: flex;
+					flex-direction: column;
+					width: 20%;
+				}
+				.box1 {
+					position: relative;
+					display: flex;
+					flex-direction: column;
+				}
+				#boton {
+					cursor: pointer;
+					margin: 2%;
+					width: 28%;
+					border-style: solid;
+					border-color: black;
+					border-width: 2px;
+					border-radius: 10px;
+					text-align: center;
+					font-size: 80%;
+				}
+			</style>
+	</body>
+</html>

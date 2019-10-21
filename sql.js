@@ -20,7 +20,7 @@ var con = mysql.createConnection({
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    var sql = "CREATE TABLE syrusmsg2 (igmsg INT,hora TIME(6),fecha DATETIME(6),longitud VARCHAR(255),latitud VARCHAR(255),RPM VARCHAR(255))";
+    var sql = "CREATE TABLE syrusmsg2 (igmsg INT,hora TIME(6),fecha DATETIME(6),longitud VARCHAR(255),latitud VARCHAR(255),RPM VARCHAR(255),id VARCHAR(255))";
     con.query(sql, function(err, result) {
         if (err) throw err;
         console.log("Table created");

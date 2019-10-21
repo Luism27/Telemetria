@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main2.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header id="header">
+            <h1><a href="http://localhost:8080/">Momlam</a></h1>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+        <!-- Menu -->
+					<nav id="menu">
+                            <div class="inner">
+                                <h2>Menu</h2>
+                                <ul class="links">
+                                    <li><a href="http://localhost:8080/">Home</a></li>
+                                    <li><a href="mapa.html">Generic</a></li>
+                                    <li><a href="elements.html">Elements</a></li>
+                                </ul>
+                                <a href="#" class="close">Close</a>
+                            </div>
+                        </nav>
+    <div class="box">
+        <div ><h1 class=titulo>Taxi 1</h1></div>
+        <div class="box1">
+            <div class="label">
+                Fecha incial :
+            </div>
+            <input type="date" id="fecha1" />
+        </div>
+        <div class="box1">
+            <div class="label">
+                Hora incial :
+            </div>
+            <input type="time" id="hora1" />
+        </div>
+        <div class="box1">
+            <div class="label">
+                Fecha final :
+            </div>
+            <input type="date" id="fecha2" />
+
+        </div>
+        <div class="box1">
+            <div class="label">
+                Hora final :
+            </div>
+            <input type="time" id="hora2" />
+        </div>
+        <div id="boton">
+            Consultar
+        </div>
+
+    </div>
+    
+
+    <div class="box">
+            <div ><h1 class="titulo">Taxi 2</h1></div>
+            <div class="box1">
+                <div class="label">
+                    Fecha incial :
+                </div>
+                <input type="date" id="fecha3" />
+            </div>
+            <div class="box1">
+                <div class="label">
+                    Hora incial :
+                </div>
+                <input type="time" id="hora3" />
+            </div>
+            <div class="box1">
+                <div class="label">
+                    Fecha final :
+                </div>
+                <input type="date" id="fecha4" />
+    
+            </div>
+            <div class="box1">
+                <div class="label">
+                    Hora final :
+                </div>
+                <input type="time" id="hora4" />
+            </div>
+            <div id="boton2">
+                Consultar
+            </div>
+    
+        </div>
+        <div id="map-template"></div>
+
+</body>
+
+</html>
+<script>
+    const map = L.map('map-template').setView([10.99304, -74.82814], 13);
+    const tileurl = 'https://a.tile.openstreetmap.de/{z}/{x}/{y}.png';
+    const tileurl2 = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
+    L.tileLayer(tileurl2).addTo(map);
+    const f1 = document.getElementById("fecha1");
+    const f2 = document.getElementById("fecha2");
+    const h1 = document.getElementById("hora1");
+    const h2 = document.getElementById("hora2");
+    const btn = document.getElementById("boton");
+    const f3 = document.getElementById("fecha3");
+    const f4 = document.getElementById("fecha4");
+    const h3 = document.getElementById("hora3");
+    const h4 = document.getElementById("hora4");
+    const btn2 = document.getElementById("boton2");
+    var date= new Date();
+    f1.value= date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f1.max=date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f2.value= date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f2.max=date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f3.value= date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f3.max=date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f4.value= date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    f4.max=date.getFullYear()+ "-" + (date.getMonth() +1) + "-" + date.getDate();
+    h1.value="00:00:00";
+    h2.value="23:59:59";
+    h3.value="00:00:00";
+    h4.value="23:59:59";
+    console.log(date.getDate());
+    let road = [];
+    let polyline;
+    let marcador ;
+    btn.addEventListener("click", () => {
+        let c1 = new Date(f1.value)
+        c1.getMilliseconds()
+        let c2 = new Date(f2.value)
+        c2.getMilliseconds()
+        //let c3 = new Date(h1.value)
+        //c3.getMilliseconds()
+        //let c4 = new Date(h2.value)
+        //c4.getMilliseconds()
+        let t1 = h1.value.split(":")
+        let tt1 = (t1[0] / 3600000) + (t1[1] / 60000) + (t1[2] / 1000)
+        let t2 = h2.value.split(":")
+        let tt2 = (t2[0] / 3600000) + (t2[1] / 60000) + (t2[2] / 1000)
+        if (c2 + tt2 >= c1 + tt1) {
+            console.log("bien");
+            let data = {
+                fecha1: f1.value, fecha2: f2.value, hora1: h1.value, hora2: h2.value
+            }
+            //console.log(data);
+            fetch("/history", {
+                method: 'POST', // 
+                body: JSON.stringify(data), // 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                return res.json() //
+            }).then(data => {
+                if (polyline) {
+                    polyline.remove();
+                }
+                data.map((d, i) => { // for 
+                    road[i] = {
+                        lat: d.latitud,
+                        lon: d.longitud,
+                        marcador: L.marker([d.latitud,d.longitud]).bindPopup(`${[d.fecha,d.hora]}`).addTo(map),
+                        
+                    }
+                })
+                //console.log(road)
+                polyline = L.polyline(road).addTo(map);
+                
+                
+            
+            })
+        } else {
+            console.log("mal");
+            alert("Fecha incorrecta")
+        }
+    })
+    btn2.addEventListener("click", () => {
+        let c1 = new Date(f3.value)
+        c1.getMilliseconds()
+        let c2 = new Date(f4.value)
+        c2.getMilliseconds()
+        //let c3 = new Date(h1.value)
+        //c3.getMilliseconds()
+        //let c4 = new Date(h2.value)
+        //c4.getMilliseconds()
+        let t1 = h3.value.split(":")
+        let tt1 = (t1[0] / 3600000) + (t1[1] / 60000) + (t1[2] / 1000)
+        let t2 = h4.value.split(":")
+        let tt2 = (t2[0] / 3600000) + (t2[1] / 60000) + (t2[2] / 1000)
+        if (c2 + tt2 >= c1 + tt1) {
+            console.log("bien");
+            let data = {
+                fecha1: f3.value, fecha2: f4.value, hora1: h3.value, hora4: h2.value
+            }
+            //console.log(data);
+            fetch("/history2", {
+                method: 'POST', // 
+                body: JSON.stringify(data), // 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                return res.json() //
+            }).then(data => {
+                if (polyline) {
+                    polyline.remove();
+                }
+                data.map((d, i) => { // for 
+                    road[i] = {
+                        lat: d.latitud,
+                        lon: d.longitud
+                    }
+                })
+                //console.log(road)
+                polyline = L.polyline(road,{color: 'red'}).addTo(map);
+            })
+        } else {
+            console.log("mal");
+            alert("Fecha incorrecta")
+        }
+    })
+</script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+<style>
+    #map-template {
+        height: 100%;
+        width: 50%;
+        position: absolute;
+        top: 0;
+        left: 50%;
+    }
+    body {
+        display: flex;
+        background: transparent url('https://www.missdigitalink.com/wp-content/uploads/2016/10/location.png') 0% 0% no-repeat padding-box;
+        opacity: 1;
+        background-size: 100vw 130vh;
+        background-position: top;
+    }
+    .box {
+        padding-top: 190px;
+        display: flex;
+        flex-direction: column;
+        width: 20%;
+    }
+    .box1 {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    #boton {
+        cursor: pointer;
+        margin: 2%;
+        width: 28%;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 80%;
+    }
+    #boton2 {
+        cursor: pointer;
+        margin: 2%;
+        width: 28%;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 80%;
+    }
+    .titulo {
+        color: black;
+        font-family: "Source Sans Pro", Helvetica, sans-serif;
+        font-size: 100%;
+    }
+</style>

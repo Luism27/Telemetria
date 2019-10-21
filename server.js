@@ -17,7 +17,8 @@ server.on("error", err => {
 server.on("message", (msg, rinfo) => {
   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
   mensaje = msg.toString("utf8");
-
+  let id = mensaje.slice(37,38);
+    console.log(id);
   // Deco
   let long, lat, fech;
   long = mensaje.slice(27, 31) + mensaje.slice(31, 36);
@@ -43,6 +44,7 @@ server.on("message", (msg, rinfo) => {
   let Fecha = `${fech.getFullYear()}-${fech.getMonth() + 1}-${fech.getDate()}`;
   let Hora = `${fech.getHours()}:${fech.getMinutes()}:${fech.getSeconds()}`;
   if (con) {
+ 
     console.log("Connected!");
     var sql =
       "INSERT INTO syrusmsg (fecha , hora , Latitud , Longitud ) VALUES ?";
@@ -50,7 +52,7 @@ server.on("message", (msg, rinfo) => {
     con.query(sql, [value], function(err, result) {
       if (err) throw err;
       console.log("1 record inserted");
-      con.end();
+      //con.end();
     });
   } else {
     console.log("Error conection with db");
@@ -89,9 +91,7 @@ app.set("views", __dirname + "/views");
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.render("home", {
-    nombre: "MOMLAM"
-  });
+  res.render("index");
 });
 
 app.get("/coord", (req, res) => {
@@ -128,7 +128,28 @@ app.post("/history", (req, res) => {
   if (con) {
     console.log("Connected!");
     var sql =
-      "SELECT * FROM syrusmsg where Fecha between ? and ? and Hora between ? and ? ";
+      "SELECT * FROM syrusmsg where fecha between ? and ? and hora between ? and ? ";
+    var value = [
+      req.body.fecha1,
+      req.body.fecha2,
+      req.body.hora1,
+      req.body.hora2
+    ];
+    con.query(sql, value, function(err, result) {
+      if (err) throw err;
+      res.json(result);
+      //con.end();
+    });
+  } else {
+    console.log("Error conection with db");
+  }
+});
+app.post("/history2", (req, res) => {
+  console.log(req.body); // Requiring data in historicos
+  if (con) {
+    console.log("Connected!");
+    var sql =
+      "SELECT * FROM syrusmsg2 where fecha between ? and ? and hora between ? and ? ";
     var value = [
       req.body.fecha1,
       req.body.fecha2,
