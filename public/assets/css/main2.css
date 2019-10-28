@@ -2226,7 +2226,7 @@ input, select, textarea {
 	}
 
 		select option {
-			color: #ffffff;
+			color: #6e2020;
 			background: #2e3141;
 		}
 
@@ -2258,15 +2258,15 @@ input, select, textarea {
 		display: block;
 		float: left;
 		margin-right: -2em;
-		opacity: 0;
+		opacity: 1;
 		width: 1em;
-		z-index: -1;
+		
 	}
 
 		input[type="checkbox"] + label,
 		input[type="radio"] + label {
 			text-decoration: none;
-			color: #ffffff;
+			color: #0f0505;
 			cursor: pointer;
 			display: inline-block;
 			font-size: 1em;
@@ -2295,9 +2295,9 @@ input, select, textarea {
 
 			input[type="checkbox"] + label:before,
 			input[type="radio"] + label:before {
-				background: rgba(255, 255, 255, 0.025);
+				background: rgba(20, 10, 10, 0.025);
 				border-radius: 5px;
-				border: solid 2px rgba(255, 255, 255, 0.125);
+				border: solid 2px rgba(94, 13, 13, 0.125);
 				content: '';
 				display: inline-block;
 				font-size: 0.8em;
@@ -2312,7 +2312,7 @@ input, select, textarea {
 
 		input[type="checkbox"]:checked + label:before,
 		input[type="radio"]:checked + label:before {
-			background: #ffffff;
+			background: #110707;
 			border-color: #ffffff;
 			content: '\f00c';
 			color: #2e3141;

@@ -17,13 +17,13 @@ server.on("error", err => {
 server.on("message", (msg, rinfo) => {
   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
   mensaje = msg.toString("utf8");
-  let id = mensaje.slice(37,38);
-    console.log(id);
+  let id = mensaje.slice(0,1);
+  console.log(id);
   // Deco
   let long, lat, fech;
-  long = mensaje.slice(27, 31) + mensaje.slice(31, 36);
+  long = mensaje.slice(28,38);
   long = parseFloat(long);
-  lat = mensaje.slice(19, 22) + mensaje.slice(22, 27);
+  lat = mensaje.slice(20, 28);
   lat = parseFloat(lat);
   if (long > 0) {
     if (long < 10) {
@@ -36,27 +36,46 @@ server.on("message", (msg, rinfo) => {
 
   console.log(lat);
 
-  fech = mensaje.slice(6, 19);
+  fech = mensaje.slice(7, 20);
   //d = datos[10];
   // tiem = datos.slice(11, 16);
   fech = new Date(parseFloat(fech) - 18000000); // Parses a string and returns a number
   // console.log(fech);
   let Fecha = `${fech.getFullYear()}-${fech.getMonth() + 1}-${fech.getDate()}`;
   let Hora = `${fech.getHours()}:${fech.getMinutes()}:${fech.getSeconds()}`;
-  if (con) {
+  let RPM=0;
+  if (id=="M"){
+    if (con) {
  
-    console.log("Connected!");
-    var sql =
-      "INSERT INTO syrusmsg (fecha , hora , Latitud , Longitud ) VALUES ?";
-    var value = [[Fecha, Hora, lat, long]];
-    con.query(sql, [value], function(err, result) {
-      if (err) throw err;
-      console.log("1 record inserted");
-      //con.end();
-    });
-  } else {
-    console.log("Error conection with db");
+      console.log("Connected!");
+      var sql =
+        "INSERT INTO syrusmsg (fecha , hora , Latitud , Longitud,ID ) VALUES ?";
+      var value = [[Fecha, Hora, lat, long,id]];
+      con.query(sql, [value], function(err, result) {
+        if (err) throw err;
+        console.log("1 record inserted");
+        //con.end();
+      });
+    } else {
+      console.log("Error conection with db");
+    }
+  } else if (id=="L"){
+    if (con) {
+ 
+      console.log("Connected!");
+      var sql =
+        "INSERT INTO syrusmsg2 (fecha , hora , Latitud , Longitud,RPM,ID ) VALUES ?";
+      var value = [[Fecha, Hora, lat, long,RPM,id]];
+      con.query(sql, [value], function(err, result) {
+        if (err) throw err;
+        console.log("1 record inserted");
+        //con.end();
+      });
+    } else {
+      console.log("Error conection with db");
+    }
   }
+  
 
   // insertar aqui db
 });

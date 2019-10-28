@@ -12,7 +12,13 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="/css/main.css">
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.2.0/leaflet.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="http://cdn.leafletjs.com/leaflet/v1.2.0/leaflet.js"></script>
+        
 	</head>
 	<body class="is-preload">
 
@@ -41,14 +47,24 @@
 					</nav>
 
 				<!-- Wrapper -->
-					<section id="wrapper">
-						<header>
-							<div class="inner">
-								<h2>Generic</h2>
-								<p>Phasellus non pulvinar erat. Fusce tincidunt nisl eget ipsum.</p>
-							</div>
-						</header>
+					
+						
 						<div id="map-template"></div>
+						<div>
+										
+ 										<form id="box">
+                                        <input type="radio" name="option" id="radio1" value="1" class="radio"  />
+                                        <label for="radio1" id="texto">Taxi1</label><br />
+                                        <input type="radio" name="option" id="radio2" value="2" class="radio"/>
+                                        <label for="radio2" id="texto">Taxi2</label><br />
+                                        <input type="radio" name="option" id="radio3" value="3" class="radio" checked />
+                                        <label for="radio3" id="texto">Ambos</label><br />
+                                    
+										</form>
+									
+						</div>
+						
+					
 						<!-- Content -->
 						
 
@@ -61,6 +77,7 @@
 			</div>
 
 		<!-- Scripts -->
+		
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrollex.min.js"></script>
@@ -69,24 +86,74 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 			<script>
-				let long, datos, lat, d, fech, tiem, fech2, tiem2, fech3, unixt, unixdate, mich, marcador;
+				let long, datos, lat, d, fech, tiem, fech2, tiem2, fech3, unixt, unixdate, mich, marcador,marcador2;
 				const map = L.map('map-template').setView([10.99304, -74.82814], 13);
+				var group = new L.LayerGroup();
+    			map.addLayer(group);
 				const tileurl = 'https://a.tile.openstreetmap.de/{z}/{x}/{y}.png';
 				const tileurl2 = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
 				L.tileLayer(tileurl2).addTo(map);
-				marcador = L.marker([10, -10]);
-				marcador.addTo(map);
+				
+				marcador2 = L.marker([10, -10]);
+				marcador2.addTo(map);
 				var polyline;
+				var polyline2;
+				let n=0;
+				let cont=0;
+				let cont2=0;
+				let estado = 0;
 				function actualizar() {
-					fetch("/coord").then(res => {
+					var taxi = document.querySelector('input[name="option"]:checked').value;
+						console.log(taxi)
+
+						/////solo taxi 1
+						if (taxi==1){
+							fetch("/coord").then(res => {
 						return res.json()
 					}).then(data => {
+						
 						var mensaje =data;
 						long = data.longitud
 						lat = data.latitud
-						if (!polyline) {
-							polyline = L.polyline([{ lat: lat, lon: long }]).addTo(map);
-						}
+						console.log(`El estado es solo taxi 1 es de ${estado} `)
+						if (estado==2 || estado==3){
+							console.log("estado 2")
+							polyline2.remove();
+							//estado=1;
+							map.removeLayer(marcador2);
+						}  
+						if (!polyline || estado==2 ){
+							console.log('aqui se crea poly 1')
+						polyline = L.polyline([{ lat: lat, lon: long }]).addTo(group);
+						marcador = L.marker([10, -10]);
+						marcador.addTo(map);
+						n=1;
+						estado =1;
+					}
+						
+						
+						if (estado==3 || estado==1){
+							if (polyline2 ){
+							polyline2.remove();
+							estado=1;
+							map.removeLayer(marcador2);
+						}  
+						} else {
+							if (polyline){
+
+								if (cont==0){
+								map.removeLayer(polyline);
+								cont=cont+1;
+								cont2=0;
+								}
+								if (n==0){
+								polyline = L.polyline([{ lat: lat, lon: long }]).addTo(group);
+								console.log(`este es n: ${n} `)
+								n=1;
+								}
+								}
+								}
+						 
 						fech = data.fecha
 						tiem2 = data.hora
 						let fecha = fech;
@@ -96,19 +163,129 @@
 						let LatLng2 = L.LatLng(lat, long);
 						polyline.addLatLng(newLatLng);
 						marcador.setLatLng(newLatLng);
-						//L.setView(newLatLng,13).addTo(map);
 						map.setView(newLatLng);
 						marcador.bindPopup(`${variable}`);
 					})
-					
-		
-					 fetch("/coord1").then(res => {
+
+						// Solo taxi 2 
+						} else if (taxi==2){
+							fetch("/coord1").then(res => {
 						return res.json()
 					}).then(data => {
-						long = data.Longitud
-						lat = data.Latitud
-						if (!polyline) {
-							polyline = L.polyline([{ lat: lat, lon: long }],{color: 'red' }).addTo(map);
+						long = data.longitud
+						lat = data.latitud
+						console.log(`El estado es solo taxi 2 es de ${estado} `)
+						if (estado==1 || estado==3){
+							polyline.remove();
+							//estado = 2;
+							map.removeLayer(marcador);
+							console.log("borraste poly 1")
+							}
+						if (!polyline2 || estado == 1){
+						marcador2 = L.marker([10, -10]);
+						marcador2.addTo(map);
+						console.log("aquí se crea poly 2")
+						polyline2 = L.polyline([{ lat: lat, lon: long }],{color: 'red' }).addTo(group);
+						n=0;
+						estado=2;
+						}
+						
+							
+						
+							if (estado == 3 || estado ==2 ){
+								if (polyline){
+							polyline.remove();
+							estado = 2;
+							map.removeLayer(marcador);
+						}
+							} else {
+								if (polyline2){
+						
+								if (cont2==0){
+								console.log("estoy entrando aquí")
+								map.removeLayer(polyline2);
+								cont2=cont+1;
+								cont=0;
+						}
+							  if (n==1){
+							  polyline = L.polyline([{ lat: lat, lon: long }],{color: 'red' }).addTo(group);
+								console.log(`este es n: ${n} `)
+								n=0;
+							  }
+						  }
+							}
+
+						
+						 
+						fech = data.Fecha
+						tiem2 = data.Hora
+						let fecha = fech;
+						let hora = tiem2;
+						let variable = [fecha, hora, lat, long];
+						let newLatLng = new L.LatLng(lat, long);
+						let LatLng2 = L.LatLng(lat, long);
+						polyline2.addLatLng(newLatLng);
+						marcador2.setLatLng(newLatLng);
+						map.setView(newLatLng);
+						marcador.bindPopup(`${variable}`);
+					})
+						} else {
+						// 	if (estado==1 || estado==2){
+						// polyline2.remove();
+						// map.removeLayer(marcador2);
+						// polyline.remove();
+						// map.removeLayer(marcador);
+						// 	}
+							////// taxi 1
+							fetch("/coord").then(res => {
+						return res.json()
+					}).then(data => {
+						
+						var mensaje =data;
+						long = data.longitud
+						lat = data.latitud
+						console.log(`El estado en taxi 1 es ${estado}`)
+						if (estado==2){
+						polyline2.remove();
+						map.removeLayer(marcador2);
+						}
+						if (!polyline ||  estado== 2){
+						console.log('aqui se crea poly 1')
+						polyline = L.polyline([{ lat: lat, lon: long }]).addTo(group);
+						marcador = L.marker([10, -10]);
+						marcador.addTo(map);
+						estado=1;
+					}
+						fech = data.fecha
+						tiem2 = data.hora
+						let fecha = fech;
+						let hora = tiem2;
+						let variable = [fecha, hora, lat, long];
+						let newLatLng = new L.LatLng(lat, long);
+						let LatLng2 = L.LatLng(lat, long);
+						polyline.addLatLng(newLatLng);
+						marcador.setLatLng(newLatLng);
+						//map.setView(newLatLng);
+						marcador.bindPopup(`${variable}`);
+					})
+						////// taxi 2
+						fetch("/coord1").then(res => {
+						return res.json()
+					     }).then(data => {
+						long = data.longitud
+						lat = data.latitud
+						console.log(`El estado en taxi 2 es ${estado}`)
+						// if (estado==1){
+						// 	polyline.remove();
+						// 	map.removeLayer(marcador);		
+						// }
+						if (!polyline2 || estado==1 ){
+						console.log("aquí se crea poly 2")
+						marcador2 = L.marker([10, -10]);
+						marcador2.addTo(map);
+						polyline2 = L.polyline([{ lat: lat, lon: long }],{color: 'red' }).addTo(group);
+						n=0;	
+						estado = 3;
 						}
 						fech = data.Fecha
 						tiem2 = data.Hora
@@ -117,13 +294,19 @@
 						let variable = [fecha, hora, lat, long];
 						let newLatLng = new L.LatLng(lat, long);
 						let LatLng2 = L.LatLng(lat, long);
-						polyline.addLatLng(newLatLng);
-						marcador.setLatLng(newLatLng);
-						marcador.bindPopup(`${variable}`);
+						polyline2.addLatLng(newLatLng);
+						marcador2.setLatLng(newLatLng);
+						//map.setView(newLatLng);
+						marcador2.bindPopup(`${variable}`);
 					})
-					//setView([lat, long]);
+						}
+					 
+					
 				}
 				let actualizarLista = setInterval(actualizar, 1000);
 			</script>
+			<style>
+		
+			</style>
 	</body>
 </html>
