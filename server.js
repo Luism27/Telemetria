@@ -18,9 +18,46 @@ server.on("message", (msg, rinfo) => {
   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
   mensaje = msg.toString("utf8");
   let id = mensaje.slice(0,1);
-  console.log(id);
-  // Deco
+  let rpmh= mensaje.slice(20,45);
+  let rpmh2=rpmh.split(" ")
+  let RPM,Fecha,Hora;
   let long, lat, fech;
+
+  if (rpmh2[0] == 41){
+    let rpmhe= rpmh2[6] + rpmh2[7];
+    let rpmdec= parseInt(rpmhe,16);
+         RPM =rpmdec/4;
+    
+  long = mensaje.slice(53,66);
+  long = parseFloat(long);
+  lat = mensaje.slice(45, 54);
+  lat = parseFloat(lat);
+  console.log(`la latitud es ${lat} `)
+  console.log(`la longitud es ${long} `)
+  if (long > 0) {
+    if (long < 10) {
+      long = -70 - long;
+    }
+  }
+  if (long > 70) {
+    long = -1 * long;
+  }
+
+  
+
+  fech = mensaje.slice(7, 20);
+  console.log(`la fecha es ${fech} `)
+  //d = datos[10];
+  // tiem = datos.slice(11, 16);
+  fech = new Date(parseFloat(fech) - 18000000); // Parses a string and returns a number
+  // console.log(fech);
+  Fecha = `${fech.getFullYear()}-${fech.getMonth() + 1}-${fech.getDate()}`;
+  Hora = `${fech.getHours()}:${fech.getMinutes()}:${fech.getSeconds()}`;
+  
+  } else {
+    console.log(id);
+  // Deco
+  
   long = mensaje.slice(28,38);
   long = parseFloat(long);
   lat = mensaje.slice(20, 28);
@@ -41,9 +78,12 @@ server.on("message", (msg, rinfo) => {
   // tiem = datos.slice(11, 16);
   fech = new Date(parseFloat(fech) - 18000000); // Parses a string and returns a number
   // console.log(fech);
-  let Fecha = `${fech.getFullYear()}-${fech.getMonth() + 1}-${fech.getDate()}`;
-  let Hora = `${fech.getHours()}:${fech.getMinutes()}:${fech.getSeconds()}`;
-  let RPM=0;
+   Fecha = `${fech.getFullYear()}-${fech.getMonth() + 1}-${fech.getDate()}`;
+   Hora = `${fech.getHours()}:${fech.getMinutes()}:${fech.getSeconds()}`;
+   RPM=0;
+  }
+
+  
   if (id=="M"){
     if (con) {
  

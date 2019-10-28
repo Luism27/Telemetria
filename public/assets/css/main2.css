@@ -2265,22 +2265,19 @@ input, select, textarea {
 
 		input[type="checkbox"] + label,
 		input[type="radio"] + label {
-			text-decoration: none;
-			color: #0f0505;
+			color: #000000;
 			cursor: pointer;
 			display: inline-block;
 			font-size: 1em;
-			font-family: "Source Sans Pro", Helvetica, sans-serif;
-			text-transform: none;
-			letter-spacing: 0;
-			font-weight: 300;
 			padding-left: 2.4em;
 			padding-right: 0.75em;
 			position: relative;
+		
 		}
 
 			input[type="checkbox"] + label:before,
 			input[type="radio"] + label:before {
+				content: "";
 				-moz-osx-font-smoothing: grayscale;
 				-webkit-font-smoothing: antialiased;
 				display: inline-block;
@@ -2291,6 +2288,7 @@ input, select, textarea {
 				text-transform: none !important;
 				font-family: 'Font Awesome 5 Free';
 				font-weight: 900;
+			
 			}
 
 			input[type="checkbox"] + label:before,
@@ -2317,10 +2315,12 @@ input, select, textarea {
 			content: '\f00c';
 			color: #2e3141;
 		}
-
+		input[type="radio"] + label:hover {
+			background: rgba(163, 224, 240, 0.932);
+		}
 		input[type="checkbox"]:focus + label:before,
 		input[type="radio"]:focus + label:before {
-			border-color: #4c5c96;
+			border-color: #2512d1;
 		}
 
 	input[type="checkbox"] + label:before {

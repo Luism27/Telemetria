@@ -38,7 +38,7 @@
 						<div class="inner">
 							<h2>Menu</h2>
 							<ul class="links">
-								<li><a href="http://localhost:8080/">Home</a></li>
+								<li><a href="http://ec2-3-222-235-254.compute-1.amazonaws.com:8080/">Home</a></li>
 								<li><a href="mapa.html">Tiempo real</a></li>
 								<li><a href="historicos.html">Historicos</a></li>
 							</ul>
@@ -59,8 +59,10 @@
                                         <label for="radio2" id="texto">Taxi2</label><br />
                                         <input type="radio" name="option" id="radio3" value="3" class="radio" checked />
                                         <label for="radio3" id="texto">Ambos</label><br />
-                                    
+										<label name="option"><h2 class="rpm">las rpm son: </h2>
+											<h2 id="rpm" class="rpm"></h2></label>
 										</form>
+										
 									
 						</div>
 						
@@ -93,10 +95,11 @@
 				const tileurl = 'https://a.tile.openstreetmap.de/{z}/{x}/{y}.png';
 				const tileurl2 = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
 				L.tileLayer(tileurl2).addTo(map);
-				
+				const rpm= document.getElementById("rpm");
 				marcador2 = L.marker([10, -10]);
 				marcador2.addTo(map);
 				var polyline;
+				let RPM;
 				var polyline2;
 				let n=0;
 				let cont=0;
@@ -115,6 +118,8 @@
 						var mensaje =data;
 						long = data.longitud
 						lat = data.latitud
+						
+						rpm.innerHTML='0';
 						console.log(`El estado es solo taxi 1 es de ${estado} `)
 						if (estado==2 || estado==3){
 							console.log("estado 2")
@@ -172,8 +177,12 @@
 							fetch("/coord1").then(res => {
 						return res.json()
 					}).then(data => {
-						long = data.longitud
-						lat = data.latitud
+						long = data.longitud;
+						lat = data.latitud;
+						RPM = data.RPM;
+						console.log(`estas son las rpm ${data.RPM} `)
+						let cadena = String(data.RPM);
+						rpm.innerHTML=cadena;
 						console.log(`El estado es solo taxi 2 es de ${estado} `)
 						if (estado==1 || estado==3){
 							polyline.remove();
@@ -217,17 +226,17 @@
 
 						
 						 
-						fech = data.Fecha
-						tiem2 = data.Hora
+						fech = data.fecha
+						tiem2 = data.hora
 						let fecha = fech;
 						let hora = tiem2;
-						let variable = [fecha, hora, lat, long];
+						let variable = [fecha, hora, lat, long,RPM];
 						let newLatLng = new L.LatLng(lat, long);
 						let LatLng2 = L.LatLng(lat, long);
 						polyline2.addLatLng(newLatLng);
 						marcador2.setLatLng(newLatLng);
 						map.setView(newLatLng);
-						marcador.bindPopup(`${variable}`);
+						marcador2.bindPopup(`${variable}`);
 					})
 						} else {
 						// 	if (estado==1 || estado==2){
@@ -274,6 +283,9 @@
 					     }).then(data => {
 						long = data.longitud
 						lat = data.latitud
+						RPM = data.RPM;
+						let cadena = String(data.RPM);
+						rpm.innerHTML=cadena;
 						console.log(`El estado en taxi 2 es ${estado}`)
 						// if (estado==1){
 						// 	polyline.remove();
@@ -287,11 +299,11 @@
 						n=0;	
 						estado = 3;
 						}
-						fech = data.Fecha
-						tiem2 = data.Hora
+						fech = data.fecha
+						tiem2 = data.hora
 						let fecha = fech;
 						let hora = tiem2;
-						let variable = [fecha, hora, lat, long];
+						let variable = [fecha, hora, lat, long,RPM];
 						let newLatLng = new L.LatLng(lat, long);
 						let LatLng2 = L.LatLng(lat, long);
 						polyline2.addLatLng(newLatLng);

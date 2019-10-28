@@ -14,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Historicos</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/main2.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 </head>
 
@@ -31,7 +31,7 @@
                             <div class="inner">
                                 <h2>Menu</h2>
                                 <ul class="links">
-                                    <li><a href="http://ec2-3-222-235-254.compute-1.amazonaws.com:8080/">Home</a></li>
+                                    <li><a href="http://localhost:8080/">Home</a></li>
                                     <li><a href="mapa.html">Tiempo real</a></li>
                                     <li><a href="elements.html">Historicos</a></li>
                                 </ul>
@@ -40,49 +40,49 @@
                         </nav>
                         <div class="box">
                                 
-                            <h3 class="label">Elija un taxi:</h3>
-                                <input type="radio" name="option" id="radio1" value="1"  />
-                                <label for="radio1">Taxi 1</label><br />
-                                <input type="radio" name="option" id="radio2" value="2"/>
-                                <label for="radio2">Taxi 2</label><br />
-                                <input type="radio" name="option" id="radio3" value="3" checked />
-                                <label for="radio3">Ambos</label><br />
-                            
-                        
-                    </div>
-                    <div class="box">
-                        <center><div class="box1">
-                            <div class="label">
-                                Fecha incial :
+                                    <h3 class="label">Elija un taxi:</h3>
+                                        <input type="radio" name="option" id="radio1" value="1"  />
+                                        <label for="radio1">Taxi 1</label><br />
+                                        <input type="radio" name="option" id="radio2" value="2"/>
+                                        <label for="radio2">Taxi 2</label><br />
+                                        <input type="radio" name="option" id="radio3" value="3" checked />
+                                        <label for="radio3">Ambos</label><br />
+                                    
+                                
                             </div>
-                            <input type="date" id="fecha1" />
-                        </div>
-                        <div class="box1">
-                            <div class="label">
-                                Hora incial :
-                            </div>
-                            <input type="time" id="hora1" />
-                        </div>
-                        <div class="box1">
-                            <div class="label">
-                                Fecha final :
-                            </div>
-                            <input type="date" id="fecha2" />
-                
-                        </div>
-                        <div class="box1">
-                            <div class="label">
-                                Hora final :
-                            </div>
-                            <input type="time" id="hora2" />
-                        </div>
-                        <br>
-                        <div href="#" class= "myButton" id="boton">
-                            CONSULTAR
-                        </div></center>
-                
-                    </div>
-        <div id="map-template"></div>
+         <div class="box">
+        <center><div class="box1">
+            <div class="label">
+                Fecha incial :
+            </div>
+            <input type="date" id="fecha1" />
+        </div>
+        <div class="box1">
+            <div class="label">
+                Hora incial :
+            </div>
+            <input type="time" id="hora1" />
+        </div>
+        <div class="box1">
+            <div class="label">
+                Fecha final :
+            </div>
+            <input type="date" id="fecha2" />
+
+        </div>
+        <div class="box1">
+            <div class="label">
+                Hora final :
+            </div>
+            <input type="time" id="hora2" />
+        </div>
+        <br>
+        <div href="#" class= "myButton" id="boton">
+            CONSULTAR
+        </div></center>
+
+    </div>
+        <div  id="map-template"></div>
 
 </body>
 
@@ -131,7 +131,7 @@
         //c3.getMilliseconds()
         //let c4 = new Date(h2.value)
         //c4.getMilliseconds()
-        let alerta=0;
+        
         let t1 = h1.value.split(":");
         let tt1 = (t1[0] ) + (t1[1] ) ;
         let t2 = h2.value.split(":");
@@ -158,10 +158,6 @@
             }).then(res => {
                 return res.json() //
             }).then(data => {
-                console.log(data)
-                if (data.length==0){
-                    alert("Datos vacíos. Ingrese nuevamente una fecha.")
-                }
                 if (polyline2){
                     polyline2.remove();
                     group.clearLayers();
@@ -201,9 +197,6 @@
             }).then(res => {
                 return res.json() //
             }).then(data => {
-                if (data.length==0){
-                    alert("Datos vacíos. Ingrese nuevamente una fecha.")
-                }
                 if (polyline2) {
                     polyline2.remove();
                     
@@ -220,7 +213,7 @@
                     road2[i] = {
                         lat: d.latitud,
                         lon: d.longitud,
-                        marquer2: L.marker([d.latitud,d.longitud]).bindPopup(`${[d.fecha,d.hora,d.RPM]}`).addTo(group),
+                        marquer2: L.marker([d.latitud,d.longitud]).bindPopup(`${[d.fecha,d.hora]}`).addTo(group),
                         
                     }
                     marcador2[i] = road2[i].marquer2;
@@ -241,11 +234,6 @@
             }).then(res => {
                 return res.json() //
             }).then(data => {
-                if (data.length==0){
-                    alerta=1;
-                } else {
-                    alerta=0;
-                }
                 if (polyline2){
                     polyline2.remove();
                     group.clearLayers();
@@ -286,19 +274,14 @@
             }).then(res => {
                 return res.json() //
             }).then(data => {
-                if (data.length==0 && alerta==1){
-                    alert("Datos vacíos. Ingrese nuevamente una fecha.")
-                } else {
-                    alerta==0;
-                }
                 if (polyline2) {
                     polyline2.remove();
                     
                 }
-                // if (polyline) {
-                //    polyline.remove();
-                //    group.clearLayers();
-                // }
+                if (polyline) {
+                   polyline.remove();
+                   group.clearLayers();
+                }
                 if (marcador2){
                             map.removeLayer(marcador2);
                         }
@@ -307,7 +290,7 @@
                     road2[i] = {
                         lat: d.latitud,
                         lon: d.longitud,
-                        marquer2: L.marker([d.latitud,d.longitud]).bindPopup(`${[d.fecha,d.hora,d.RPM]}`).addTo(group),
+                        marquer2: L.marker([d.latitud,d.longitud]).bindPopup(`${[d.fecha,d.hora]}`).addTo(group),
                         
                     }
                     marcador2[i] = road2[i].marquer2;
@@ -335,13 +318,12 @@
 <script src="assets/js/util.js"></script>
 <script src="assets/js/main.js"></script>
 <style>
-   #map-template {
+    #map-template {
         height: 100%;
         width: 50%;
         position: absolute;
         top: 0;
         left: 50%;
-        z-index: 0;
     }
     body {
         display: flex;
